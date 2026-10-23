@@ -1,0 +1,16 @@
+{
+  "name": "xen-family-registration",
+  "version": "1.0.0",
+  "private": true,
+  "description": "XeN FAMILY registration form with Telegram server-side delivery",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
