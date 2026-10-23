@@ -1,1 +1,141 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XeN FAMILY - Clan Test Registration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Vazirmatn', 'sans-serif'] } } } };
+  </script>
+  <style>
+    body{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);background-size:400% 400%;animation:gradientBG 15s ease infinite;min-height:100vh;color:#fff;overflow-x:hidden}
+    @keyframes gradientBG{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    .glass-panel{background:rgba(20,22,38,.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);box-shadow:0 25px 50px -12px rgba(0,0,0,.7)}
+    .glass-input{background:rgba(10,12,20,.6);border:1px solid rgba(255,255,255,.15);color:#fff;transition:all .3s ease}
+    .glass-input:focus{background:rgba(15,18,30,.85);border-color:#a855f7;box-shadow:0 0 20px rgba(168,85,247,.35);outline:none}
+    .glass-button{background:linear-gradient(135deg,#9333ea 0%,#ec4899 100%);transition:all .3s ease;box-shadow:0 10px 25px -5px rgba(147,51,234,.5)}
+    .glass-button:hover{transform:translateY(-2px);box-shadow:0 15px 30px -5px rgba(236,72,153,.65)}
+    .orb{position:absolute;border-radius:50%;filter:blur(90px);z-index:-1;opacity:.5;animation:floatOrb 10s ease-in-out infinite alternate}
+    @keyframes floatOrb{0%{transform:translateY(0) scale(1)}100%{transform:translateY(-40px) scale(1.1)}}
+    .slide-down{animation:slideDown .35s ease forwards}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-10px);max-height:0}to{opacity:1;transform:translateY(0);max-height:150px}}
+  </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 relative">
+  <div class="orb w-72 h-72 bg-purple-600 top-10 left-10"></div>
+  <div class="orb w-80 h-80 bg-pink-600 bottom-10 right-10" style="animation-delay:-5s"></div>
+  <main class="w-full max-w-xl mx-auto z-10 my-8">
+    <header class="text-center mb-8">
+      <div class="inline-block p-3 rounded-2xl glass-panel mb-3 shadow-lg shadow-purple-900/30"><i class="fa-solid fa-gamepad text-4xl bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent"></i></div>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-wider bg-gradient-to-r from-purple-300 via-pink-400 to-red-400 bg-clip-text text-transparent">XeN FAMILY</h1>
+      <p class="text-xs sm:text-sm font-bold tracking-widest text-purple-300 uppercase mt-1">XeN TESTING - Call of Duty Mobile Clan</p>
+    </header>
+    <section class="glass-panel rounded-3xl p-6 sm:p-8 relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500"></div>
+      <h2 class="text-xl sm:text-2xl font-bold mb-6 text-center text-gray-100 flex items-center justify-center gap-2"><i class="fa-solid fa-clipboard-user text-purple-400"></i> فرم ثبت‌نام تست کلن</h2>
+      <form id="clanForm" class="space-y-5">
+        <div><label class="block text-sm font-medium text-gray-300 mb-1.5"><i class="fa-solid fa-user text-purple-400"></i> نام شما</label><input type="text" id="userName" required placeholder="نام خود را وارد کنید..." class="w-full px-4 py-3 rounded-xl glass-input text-sm sm:text-base"></div>
+        <div><label class="block text-sm font-medium text-gray-300 mb-1.5"><i class="fa-solid fa-cake-candles text-purple-400"></i> سن</label><input type="number" id="userAge" required min="10" max="60" placeholder="سن خود را وارد کنید..." class="w-full px-4 py-3 rounded-xl glass-input text-sm sm:text-base"></div>
+        <div><label class="block text-sm font-medium text-gray-300 mb-1.5"><i class="fa-brands fa-telegram text-purple-400"></i> آیدی تلگرام</label><input type="text" id="userTelegram" required placeholder="@username یا لینک آیدی" class="w-full px-4 py-3 rounded-xl glass-input text-sm sm:text-base"></div>
+        <div><label class="block text-sm font-medium text-gray-300 mb-1.5"><i class="fa-solid fa-star text-purple-400"></i> لول در بازی (حداکثر ۵۰۰)</label><input type="number" id="userLevel" required min="1" max="500" placeholder="مثلاً 150" class="w-full px-4 py-3 rounded-xl glass-input text-sm sm:text-base"></div>
+        <div><label class="block text-sm font-medium text-gray-300 mb-1.5"><i class="fa-solid fa-mobile-screen-button text-purple-400"></i> دیوایس بازی</label><select id="userDevice" required class="w-full px-4 py-3 rounded-xl glass-input text-sm sm:text-base cursor-pointer"><option value="" disabled selected>انتخاب دیوایس...</option><option value="PC">PC (کامپیوتر)</option><option value="Android">Android (اندروید)</option><option value="iOS">iOS (آیفون)</option></select></div>
+        <div id="phoneModelContainer" class="hidden"><label class="block text-sm font-medium text-gray-300 mb-1.5"><i class="fa-solid fa-mobile text-pink-400"></i> مدل گوشی</label><input type="text" id="phoneModel" placeholder="مثلاً Poco X3 Pro یا iPhone 13" class="w-full px-4 py-3 rounded-xl glass-input text-sm sm:text-base"></div>
+        <button type="submit" id="submitBtn" class="w-full py-4 rounded-xl font-bold text-white glass-button tracking-wider text-base sm:text-lg flex items-center justify-center gap-3 mt-6"><i class="fa-solid fa-paper-plane"></i> ارسال درخواست تست</button>
+      </form>
+    </section>
+    <p class="text-center text-xs text-gray-400 mt-6">تمامی درخواست‌ها مستقیماً بررسی و به تیم مدیریت XeN FAMILY ارسال می‌شود.</p>
+  </main>
+  <div id="successModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel max-w-md w-full rounded-3xl p-8 text-center relative">
+      <div class="w-20 h-20 bg-gradient-to-tr from-green-500 to-emerald-400 rounded-full flex items-center justify-center mx-auto mb-5"><i class="fa-solid fa-check text-3xl text-white"></i></div>
+      <h3 class="text-2xl font-black text-white mb-2">درخواست شما با موفقیت ثبت شد!</h3>
+      <p class="text-gray-300 text-sm mb-6 leading-relaxed">درخواست شما ارسال شد. در صورت موفقیت ارسال، مدیریت از طریق تلگرام با شما ارتباط خواهد گرفت.</p>
+      <button id="closeModal" class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 font-bold text-white">بازگشت به صفحه</button>
+    </div>
+  </div>
+  <div id="toast" class="fixed bottom-6 right-6 z-50 hidden max-w-sm w-full bg-gray-900 border border-purple-500/40 p-4 rounded-2xl shadow-2xl">
+    <h4 id="toastTitle" class="font-bold text-sm text-white"></h4><p id="toastDesc" class="text-xs text-gray-300 mt-1"></p>
+  </div>
+<script>
+  const form = document.getElementById('clanForm');
+  const deviceSelect = document.getElementById('userDevice');
+  const phoneContainer = document.getElementById('phoneModelContainer');
+  const phoneInput = document.getElementById('phoneModel');
+  const submitBtn = document.getElementById('submitBtn');
 
+  function notify(title, desc) {
+    document.getElementById('toastTitle').textContent = title;
+    document.getElementById('toastDesc').textContent = desc;
+    const toast = document.getElementById('toast');
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 4500);
+  }
+
+  function handleDeviceChange() {
+    const needsPhone = deviceSelect.value === 'Android' || deviceSelect.value === 'iOS';
+    phoneContainer.classList.toggle('hidden', !needsPhone);
+    phoneInput.required = needsPhone;
+    if (!needsPhone) phoneInput.value = '';
+  }
+  deviceSelect.addEventListener('change', handleDeviceChange);
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const name = document.getElementById('userName').value.trim();
+    const age = document.getElementById('userAge').value.trim();
+    const telegram = document.getElementById('userTelegram').value.trim();
+    const level = document.getElementById('userLevel').value.trim();
+    const device = deviceSelect.value;
+    const phoneModel = phoneInput.value.trim();
+    if (Number(level) < 1 || Number(level) > 500) {
+      notify('خطا در اطلاعات', 'لول بازی باید بین ۱ تا ۵۰۰ باشد.');
+      return;
+    }
+    if ((device === 'Android' || device === 'iOS') && !phoneModel) {
+      notify('اطلاعات ناقص', 'لطفاً مدل گوشی را وارد کنید.');
+      return;
+    }
+    const message = [
+      '🎯 درخواست جدید تست کلن XeN FAMILY',
+      '',
+      `👤 نام: ${name}`,
+      `🔢 سن: ${age}`,
+      `📱 آیدی تلگرام: ${telegram}`,
+      `⭐ لول در بازی: ${level}`,
+      `💻 دیوایس: ${device}`,
+      ...((device === 'Android' || device === 'iOS') ? [`📱 مدل گوشی: ${phoneModel}`] : []),
+      `🕒 زمان: ${new Date().toLocaleString('fa-IR')}`
+    ].join('\n');
+    const original = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> در حال ارسال...';
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          name, age, telegram, level, device, phoneModel
+        })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (response.ok && result.ok) {
+        document.getElementById('successModal').classList.remove('hidden');
+        form.reset();
+        handleDeviceChange();
+      } else {
+        notify('ارسال ناموفق بود', result.error || 'ارسال به تلگرام انجام نشد. دوباره تلاش کنید.');
+      }
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = original;
+    }
+  });
+  document.getElementById('closeModal').addEventListener('click', () => {
+    document.getElementById('successModal').classList.add('hidden');
+  });
+</script>
+</body>
+</html>
