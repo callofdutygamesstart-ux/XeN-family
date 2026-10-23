@@ -3,9 +3,7 @@ const path = require('path');
 
 const app = express();
 
-const ALLOWED_ORIGIN =
-  'https://callofdutygamesstart-ux.github.io';
-
+const ALLOWED_ORIGIN = 'https://callofdutygamesstart-ux.github.io';
 const PORT = process.env.PORT || 3000;
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
@@ -120,7 +118,7 @@ app.post('/api/register', async (req, res) => {
     👤 نام: ${name.trim()},
     🔢 سن: ${age.trim()},
     📱 آیدی تلگرام: ${telegram.trim()},
-    ⭐ لول در بازی: ${level.trim()},
+    ⭐️ لول در بازی: ${level.trim()},
     💻 دیوایس: ${device},
     ...(
       device === 'Android' || device === 'iOS'
