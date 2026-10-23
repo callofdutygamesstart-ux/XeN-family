@@ -234,9 +234,8 @@
 
     <!-- JavaScript Application Logic -->
     <script>
-        // Telegram Bot Credentials
-        const BOT_TOKEN = "8987246076:AAGiMHR1SspuHyR9P4jBGCWqyS1Qaf60ZWI";
-        const CHAT_ID = "6503569108";
+       
+
 
         // Handle Device Selection (Show/Hide Phone Model input)
         function handleDeviceChange() {
@@ -303,86 +302,63 @@
         }
 
         // Form Submit Handler & Telegram API integration with fallback
-        async function submitForm(event) {
-            event.preventDefault();
+async function submitForm(event) {
+    event.preventDefault();
 
-            const name = document.getElementById('userName').value.trim();
-            const age = document.getElementById('userAge').value.trim();
-            const telegram = document.getElementById('userTelegram').value.trim();
-            const level = document.getElementById('userLevel').value.trim();
-            const device = document.getElementById('userDevice').value;
-            const phoneModel = document.getElementById('phoneModel').value.trim();
+    const name = document.getElementById('userName').value.trim();
+    const age = document.getElementById('userAge').value.trim();
+    const telegram = document.getElementById('userTelegram').value.trim();
+    const level = document.getElementById('userLevel').value.trim();
+    const device = document.getElementById('userDevice').value;
+    const phoneModel = document.getElementById('phoneModel').value.trim();
 
-            // Validate level max 500
-            if (parseInt(level) > 500) {
-                showToast('خطا در اطلاعات', 'لول بازی نمی‌تواند بیشتر از ۵۰۰ باشد.', false);
-                return;
+    const submitBtn = document.getElementById('submitBtn');
+    const originalBtnHtml = submitBtn.innerHTML;
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML =
+        '<i class="fa-solid fa-spinner fa-spin"></i> در حال ارسال...';
+
+    try {
+        const response = await fetch(
+            'https://xen-family.onrender.com/api/register',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name,
+                    age,
+                    telegram,
+                    level,
+                    device,
+                    phoneModel
+                })
             }
+        );
 
-            const submitBtn = document.getElementById('submitBtn');
-            const originalBtnHtml = submitBtn.innerHTML;
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> در حال ارسال اطلاعات...';
+        const result = await response.json();
 
-            // Format message for Telegram bot
-            let message = `🎯 *درخواست جدید تست کلن XeN FAMILY*\n\n`;
-            message += `👤 *نام:* ${name}\n`;
-            message += `🔢 *سن:* ${age}\n`;
-            message += `📱 *آیدی تلگرام:* ${telegram}\n`;
-            message += `⭐ *لول در بازی:* ${level}\n`;
-            message += `💻 *دیوایس:* ${device}\n`;
-            if (device === 'Android' || device === 'iOS') {
-                message += `📱 *مدل گوشی:* ${phoneModel}\n`;
-            }
-            message += `\n🕒 *زمان:* ${new Date().toLocaleString('fa-IR')}`;
-
-            const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-            const payload = {
-                chat_id: CHAT_ID,
-                text: message,
-                parse_mode: 'Markdown'
-            };
-
-            let sentSuccessfully = false;
-
-            // Attempt 1: Direct fetch to Telegram API
-            try {
-                const response = await fetch(telegramUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await response.json();
-                if (data.ok) {
-                    sentSuccessfully = true;
-                }
-            } catch (err) {
-                console.warn('Direct Telegram API request failed, trying proxy fallback...', err);
-            }
-
-            // Attempt 2: Fallback via reliable CORS Proxy if direct fetch is blocked by network filters
-            if (!sentSuccessfully) {
-                try {
-                    const proxyUrl = `https://api.allorigins.win/raw?url=` + encodeURIComponent(telegramUrl + `?chat_id=${CHAT_ID}&parse_mode=Markdown&text=` + encodeURIComponent(message));
-                    const proxyResponse = await fetch(proxyUrl);
-                    if (proxyResponse.ok) {
-                        sentSuccessfully = true;
-                    }
-                } catch (proxyErr) {
-                    console.error('Proxy fallback failed as well:', proxyErr);
-                }
-            }
-
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnHtml;
-
-            if (sentSuccessfully) {
-                openModal();
-            } else {
-                // Even if network blocks both, show success to user or notify fallback. To ensure ultimate reliability, let's open modal.
-                openModal();
-            }
+        if (!response.ok || !result.ok) {
+            throw new Error(
+                result.error || 'ثبت درخواست ناموفق بود.'
+            );
         }
+
+        openModal();
+
+    } catch (error) {
+        showToast(
+            'خطا در ثبت درخواست',
+            error.message || 'اتصال به سرور برقرار نشد.',
+            false
+        );
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
+    }
+}
     </script>
 </body>
 </html>
