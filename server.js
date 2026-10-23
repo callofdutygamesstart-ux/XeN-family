@@ -38,7 +38,15 @@ app.use('/api/register', (req, res, next) => {
 });
 
 app.post('/api/register', async (req, res) => {
+  console.log('REGISTER REQUEST RECEIVED');
+
   if (!BOT_TOKEN || !CHAT_ID) {
+    console.error('BOT_TOKEN or CHAT_ID is missing');
+    return res.status(500).json({
+      ok: false,
+      error: 'تنظیمات سرور کامل نیست.'
+    });
+  }
     return res.status(500).json({ ok: false, error: 'تنظیمات سرور کامل نیست.' });
   }
 
@@ -61,7 +69,7 @@ app.post('/api/register', async (req, res) => {
     `📱 آیدی تلگرام: ${telegram.trim()}`,
     `⭐ لول در بازی: ${level.trim()}`,
     `💻 دیوایس: ${device}`,
-    ...((device === 'Android' || device === 'iOS') ? [`📱 مدل گوشی: ${phoneModel.trim()}`] : []),
+    ...((device === 'Android' || device === 'iOS') ? [`📱 مدل گوشی: ${phoneModel.trpim()}`] : []),
     `🕒 زمان: ${new Date().toLocaleString('fa-IR')}`
   ].join('\n');
 
