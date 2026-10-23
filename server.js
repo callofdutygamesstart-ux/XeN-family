@@ -122,7 +122,7 @@ app.post('/api/register', async (req, res) => {
   '💻 دیوایس: ${device}',
   ...(
     device === 'Android' || device === 'iOS'
-      ? [📱 مدل گوشی: ${phoneModel.trim()}]
+      ? ['📱 مدل گوشی: ${phoneModel.trim()'}]
       : []
   ),
   🕒 زمان: ${new Date().toLocaleString('fa-IR')}
