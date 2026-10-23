@@ -113,20 +113,20 @@ app.post('/api/register', async (req, res) => {
   }
 
   const message = [
-    '🎯 درخواست جدید تست کلن XeN FAMILY',
-    '',
-    👤 نام: ${name.trim()},
-    🔢 سن: ${age.trim()},
-    📱 آیدی تلگرام: ${telegram.trim()},
-    ⭐️ لول در بازی: ${level.trim()},
-    💻 دیوایس: ${device},
-    ...(
-      device === 'Android' || device === 'iOS'
-        ? [📱 مدل گوشی: ${phoneModel.trim()}]
-        : []
-    ),
-    🕒 زمان: ${new Date().toLocaleString('fa-IR')}
-  ].join('\n');
+  '🎯 درخواست جدید تست کلن XeN FAMILY',
+  '',
+  👤 نام: ${name.trim()},
+  🔢 سن: ${age.trim()},
+  📱 آیدی تلگرام: ${telegram.trim()},
+  ⭐ لول در بازی: ${level.trim()},
+  💻 دیوایس: ${device},
+  ...(
+    device === 'Android' || device === 'iOS'
+      ? [📱 مدل گوشی: ${phoneModel.trim()}]
+      : []
+  ),
+  🕒 زمان: ${new Date().toLocaleString('fa-IR')}
+].join('\n');
 
   try {
     const tg = await fetch(
