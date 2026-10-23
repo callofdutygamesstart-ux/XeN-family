@@ -1,16 +1,16 @@
 const express = require('express');
-const path = require('path');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
-
-const ALLOWED_ORIGIN = 'https://callofdutygamesstart-ux.github.io';
 const PORT = process.env.PORT || 3000;
-const BOT_TOKEN = process.env.BOT_TOKEN;
-const CHAT_ID = process.env.CHAT_ID;
 
-// CORS
+app.use(express.json({ limit: '20kb' }));
+
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
+  res.setHeader(
+    'Access-Control-Allow-Origin',
+    'https://callofdutygamesstart-ux.github.io'
+  );
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -21,162 +21,124 @@ app.use((req, res, next) => {
   next();
 });
 
-app.disable('x-powered-by');
-app.use(express.json({ limit: '10kb' }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/api/', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false
+}));
 
-// Rate limit
-const hits = new Map();
-
-app.use('/api/register', (req, res, next) => {
-  const ip =
-    req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-    req.socket.remoteAddress ||
-    'unknown';
-
-  const now = Date.now();
-  const entry = hits.get(ip) || {
-    count: 0,
-    resetAt: now + 60_000
-  };
-
-  if (now > entry.resetAt) {
-    entry.count = 0;
-    entry.resetAt = now + 60_000;
-  }
-
-  entry.count += 1;
-  hits.set(ip, entry);
-
-  if (entry.count > 8) {
-    return res.status(429).json({
-      ok: false,
-      error: 'تعداد درخواست‌ها زیاد است؛ کمی بعد دوباره تلاش کنید.'
-    });
-  }
-
-  next();
+app.get('/health', (req, res) => {
+  res.json({ ok: true });
 });
 
-// Register
 app.post('/api/register', async (req, res) => {
-  console.log('REGISTER REQUEST RECEIVED');
-
-  if (!BOT_TOKEN || !CHAT_ID) {
-    console.error('BOT_TOKEN or CHAT_ID is missing');
-
-    return res.status(500).json({
-      ok: false,
-      error: 'تنظیمات سرور کامل نیست.'
-    });
-  }
-
-  const {
-    name,
-    age,
-    telegram,
-    level,
-    device,
-    phoneModel
-  } = req.body || {};
-
-  if (
-    ![name, age, telegram, level, device].every(
-      value => typeof value === 'string' && value.trim()
-    )
-  ) {
-    return res.status(400).json({
-      ok: false,
-      error: 'لطفاً همه فیلدهای ضروری را کامل کنید.'
-    });
-  }
-
-  if (
-    name.length > 100 ||
-    telegram.length > 100 ||
-    Number(age) < 10 ||
-    Number(age) > 60 ||
-    !Number.isFinite(Number(age)) ||
-    Number(level) < 1 ||
-    Number(level) > 500 ||
-    !Number.isFinite(Number(level)) ||
-    !['PC', 'Android', 'iOS'].includes(device) ||
-    (
-      (device === 'Android' || device === 'iOS') &&
-      (typeof phoneModel !== 'string' || !phoneModel.trim())
-    )
-  ) {
-    return res.status(400).json({
-      ok: false,
-      error: 'اطلاعات واردشده معتبر نیست.'
-    });
-  }
-
-  const message = [
-  '🎯 درخواست جدید تست کلن XeN FAMILY',
-  '',
-  '👤 نام: ${name.trim()}',
-  '🔢 سن: ${age.trim()}',
-  '📱 آیدی تلگرام: ${telegram.trim()}',
-  '⭐ لول در بازی: ${level.trim()}',
-  '💻 دیوایس: ${device}',
-  ...(
-    device === 'Android' || device === 'iOS'
-      ? ['📱 مدل گوشی: ${phoneModel.trim()'}]
-      : []
-  ),
-  🕒 زمان: ${new Date().toLocaleString('fa-IR')}
-].join('\n');
-
   try {
-    const tg = await fetch(
-      https://api.telegram.org/bot${BOT_TOKEN}/sendMessage,
+    const { name, age, telegram, level, device, phoneModel } = req.body || {};
+
+    if (
+      typeof name !== 'string' ||
+      (typeof age !== 'string' && typeof age !== 'number') ||
+      typeof telegram !== 'string' ||
+      typeof level !== 'string' ||
+      typeof device !== 'string'
+    ) {
+      return res.status(400).json({
+        ok: false,
+        error: 'اطلاعات ارسالی معتبر نیست.'
+      });
+    }
+
+    const cleanName = name.trim();
+    const cleanAge = String(age).trim();
+    const cleanTelegram = telegram.trim();
+    const cleanLevel = level.trim();
+    const cleanDevice = device.trim();
+    const cleanPhoneModel =
+      typeof phoneModel === 'string' ? phoneModel.trim() : '';
+
+    if (
+      !cleanName ||
+      !cleanAge ||
+      !cleanTelegram ||
+      !cleanLevel ||
+      !cleanDevice
+    ) {
+      return res.status(400).json({
+        ok: false,
+        error: 'لطفاً همه فیلدهای ضروری را تکمیل کنید.'
+      });
+    }
+
+    const botToken = process.env.BOT_TOKEN;
+    const chatId = process.env.CHAT_ID;
+
+    if (!botToken || !chatId) {
+      console.error('Missing BOT_TOKEN or CHAT_ID');
+      return res.status(500).json({
+        ok: false,
+        error: 'تنظیمات سرور کامل نیست.'
+      });
+    }
+
+    const message = [
+      '🎯 درخواست جدید تست کلن XeN FAMILY',
+      '',
+      '👤 نام: ' + cleanName,
+      '🔢 سن: ' + cleanAge,
+      '📱 آیدی تلگرام: ' + cleanTelegram,
+      '⭐ لول در بازی: ' + cleanLevel,
+      '💻 دیوایس: ' + cleanDevice,
+      ...(
+        cleanDevice === 'Android' || cleanDevice === 'iOS'
+          ? ['📱 مدل گوشی: ' + cleanPhoneModel]
+          : []
+      ),
+      '🕒 زمان: ' + new Date().toLocaleString('fa-IR')
+    ].join('\n');
+
+    const telegramResponse = await fetch(
+      'https://api.telegram.org/bot' + botToken + '/sendMessage',
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          chat_id: CHAT_ID,
+          chat_id: chatId,
           text: message
-        }),
-        signal: AbortSignal.timeout(10000)
+        })
       }
     );
 
-    const data = await tg.json();
+    const telegramResult = await telegramResponse.json();
 
-    if (!tg.ok || !data.ok) {
-      console.error(
-        'Telegram send failed:',
-        data.description || tg.status
-      );
+    if (!telegramResponse.ok || !telegramResult.ok) {
+      console.error('Telegram error:', telegramResult);
 
       return res.status(502).json({
         ok: false,
-        error: 'سرور نتوانست پیام را به تلگرام ارسال کند.'
+        error: 'ارسال پیام به تلگرام ناموفق بود.'
       });
     }
 
-    console.log('TELEGRAM MESSAGE SENT SUCCESSFULLY');
+    return res.json({
+      ok: true,
+      message: 'درخواست با موفقیت ارسال شد.'
+    });
 
-    return res.json({ ok: true });
+  } catch (error) {
+    console.error('Registration error:', error);
 
-  } catch (err) {
-    console.error('Telegram request error:', err.message);
-
-    return res.status(502).json({
+    return res.status(500).json({
       ok: false,
-      error: 'اتصال سرور به تلگرام برقرار نشد.'
+      error: 'خطای داخلی سرور.'
     });
   }
 });
 
-// Health check
-app.get('/health', (_req, res) => {
-  res.json({ ok: true });
-});
+app.use(express.static('public'));
 
 app.listen(PORT, () => {
-  console.log(XeN FAMILY server listening on ${PORT});
+  console.log('XeN FAMILY server running on port ' + PORT);
 });
